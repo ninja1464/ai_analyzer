@@ -1,9 +1,8 @@
-import { readDB } from "../db.js";
+import { findOne } from "../db.js";
 import { verifyAuthToken } from "../services/authService.js";
 
 async function loadUser(userId) {
-  const users = await readDB("users.json");
-  return users.find((user) => user.id === userId) || null;
+  return await findOne("users", { id: userId });
 }
 
 export const authenticate = async (req, res, next) => {

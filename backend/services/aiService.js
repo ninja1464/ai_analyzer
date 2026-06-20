@@ -75,3 +75,47 @@ ${trimmedText}
     };
   }
 };
+
+export const generateTailoredResume = async (resumeText, jobDescription, matchData) => {
+  if (!process.env.GROQ_API_KEY) {
+    throw new Error("GROQ_API_KEY not set");
+  }
+
+  try {
+    const missingKeywords = matchData?.missingKeywords?.join(", ") || "none";
+    const suggestions = matchData?.improvementSuggestions?.join("\n- ") || "none";
+
+    const prompt = `
+You are an expert resume writer.
+
+Rewrite the candidate's resume to better match the job description below.
+
+Rules:
+- Incorporate these missing keywords naturally where relevant: ${missingKeywords}
+- Apply these improvement suggestions: 
+  - ${suggestions}
+- Reframe existing experience using stronger action verbs aligned with the job
+- Do NOT invent skills or experience the candidate does not have
+- Keep the same sections (Summary, Experience, Skills, Education, etc.)
+- Return ONLY the rewritten resume as plain text, no commentary
+
+Job Description:
+${jobDescription.slice(0, 2000)}
+
+Original Resume:
+${resumeText.slice(0, 3000)}
+`;
+
+    const response = await client.chat.completions.create({
+      model: "llama-3.3-70b-versatile",
+      messages: [{ role: "user", content: prompt }],
+    });
+
+    const generated = response.choices[0].message.content.trim();
+
+    return { success: true, data: { generatedResume: generated } };
+  } catch (error) {
+    console.error("GENERATE RESUME ERROR:", error);
+    return { success: false, error: error.message || "Resume generation failed" };
+  }
+};

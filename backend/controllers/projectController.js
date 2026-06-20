@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import { readDB, writeDB } from "../db.js";
+import { findMany, insertOne } from "../db.js";
 
 export const createProject = async (req, res) => {
   try {
@@ -17,7 +17,6 @@ export const createProject = async (req, res) => {
       });
     }
 
-    const projects = await readDB("projects.json");
     const newProject = {
       id: randomUUID(),
       userId,
@@ -28,8 +27,7 @@ export const createProject = async (req, res) => {
       createdAt: new Date().toISOString(),
     };
 
-    projects.push(newProject);
-    await writeDB(projects, "projects.json");
+    await insertOne("projects", newProject);
 
     return res.status(201).json({
       success: true,
@@ -50,10 +48,7 @@ export const listProjects = async (req, res) => {
       return res.status(401).json({ success: false, error: "Unauthorized" });
     }
 
-    const projects = await readDB("projects.json");
-    const userProjects = projects.filter(
-      (project) => project.userId === userId,
-    );
+    const userProjects = await findMany("projects", { userId });
     return res.status(200).json({ success: true, data: userProjects });
   } catch (error) {
     console.error("PROJECT LIST ERROR:", error);

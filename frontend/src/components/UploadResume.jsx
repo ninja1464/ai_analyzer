@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Upload } from "lucide-react";
 
 const UploadResume = ({ onAnalyze, loading }) => {
   const [file, setFile] = useState(null);
@@ -11,26 +12,20 @@ const UploadResume = ({ onAnalyze, loading }) => {
           accept=".pdf,.doc,.docx"
           onChange={(e) => setFile(e.target.files?.[0] || null)}
         />
+        <Upload size={28} style={{ color: "var(--accent)", opacity: 0.7 }} />
         <div>
-          <strong>{file ? file.name : "Drag & Drop PDF/DOCX"}</strong>
-          <span>Click or drop your resume here to upload.</span>
+          <strong>{file ? file.name : "Click or drag to upload"}</strong>
+          <span>PDF, DOC, or DOCX — max 5 MB</span>
         </div>
       </label>
       <button
         type="button"
         className="primary-button"
-        disabled={loading}
-        onClick={() => {
-          if (!file) {
-            window.alert("Please choose a resume file before analyzing.");
-            return;
-          }
-          onAnalyze(file);
-        }}
+        disabled={loading || !file}
+        onClick={() => onAnalyze(file)}
       >
         {loading ? "Analyzing..." : "Analyze Resume"}
       </button>
-      <p className="upload-note">Accepted formats: PDF, DOC, DOCX.</p>
     </div>
   );
 };

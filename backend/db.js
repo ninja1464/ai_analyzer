@@ -1,31 +1,59 @@
-import fs from "fs/promises";
+import { MongoClient } from "mongodb";
+import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const envPath = path.resolve(__dirname, ".env");
 
-function resolveDataPath(filename = "projects.json") {
-  return path.resolve(__dirname, "data", filename);
-}
+dotenv.config({ path: envPath });
 
-export async function readDB(filename = "projects.json") {
-  const filePath = resolveDataPath(filename);
+const uri = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017";
+const dbName = process.env.MONGODB_DB_NAME || "ai_resume_platform";
+let client;
+let db;
 
-  try {
-    const raw = await fs.readFile(filePath, "utf-8");
-    return JSON.parse(raw);
-  } catch (error) {
-    if (error.code === "ENOENT") {
-      await fs.mkdir(path.dirname(filePath), { recursive: true });
-      await writeDB([], filename);
-      return [];
-    }
-    throw error;
+export async function connectDB() {
+  if (!client) {
+    client = new MongoClient(uri);
+    await client.connect();
+    db = client.db(dbName);
+    console.log(`Connected to MongoDB: ${uri}`);
   }
+  return db;
 }
 
-export async function writeDB(data, filename = "projects.json") {
-  const filePath = resolveDataPath(filename);
-  await fs.mkdir(path.dirname(filePath), { recursive: true });
-  await fs.writeFile(filePath, JSON.stringify(data, null, 2), "utf-8");
+export function getDB() {
+  if (!db) {
+    throw new Error("Database not connected. Call connectDB() first.");
+  }
+  return db;
+}
+
+export function getCollection(name) {
+  return getDB().collection(name);
+}
+
+export async function findOne(collectionName, query) {
+  return getCollection(collectionName).findOne(query);
+}
+
+export async function findMany(collectionName, query = {}) {
+  return getCollection(collectionName).find(query).toArray();
+}
+
+export async function insertOne(collectionName, document) {
+  return getCollection(collectionName).insertOne(document);
+}
+
+export async function updateOne(collectionName, filter, update, options = {}) {
+  return getCollection(collectionName).updateOne(filter, update, options);
+}
+
+export async function replaceAll(collectionName, documents) {
+  const collection = getCollection(collectionName);
+  await collection.deleteMany({});
+  if (documents.length > 0) {
+    await collection.insertMany(documents);
+  }
 }

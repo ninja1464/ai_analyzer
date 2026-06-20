@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { loginUser } from "../services/api";
+import { Sparkles, Mail, Lock } from "lucide-react";
 
-const LoginPage = ({ onAuthSuccess }) => {
+const LoginPage = ({ onAuthSuccess, onSwitch }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [status, setStatus] = useState(null);
@@ -12,10 +13,7 @@ const LoginPage = ({ onAuthSuccess }) => {
     setStatus(null);
 
     if (!email || !password) {
-      setStatus({
-        type: "error",
-        message: "Please enter your email and password.",
-      });
+      setStatus({ type: "error", message: "Please enter your email and password." });
       return;
     }
 
@@ -26,63 +24,58 @@ const LoginPage = ({ onAuthSuccess }) => {
       if (response?.data?.success) {
         onAuthSuccess(response.data.data.token, response.data.data.user);
       } else {
-        setStatus({
-          type: "error",
-          message: response?.data?.error || "Login failed.",
-        });
+        setStatus({ type: "error", message: response?.data?.error || "Login failed." });
       }
     } catch (error) {
       console.error("Login failed", error);
-      setStatus({
-        type: "error",
-        message: "Unable to connect to the backend.",
-      });
+      setStatus({ type: "error", message: "Unable to connect to the backend." });
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="page-panel">
-      <div className="panel-header">
-        <div>
-          <span className="section-tag">Login</span>
-          <h2>Welcome back</h2>
-          <p className="panel-description">
-            Sign in to continue to your saved resume insights, projects, and job
-            matches.
+    <div className="auth-page">
+      <div className="auth-card">
+        <div className="auth-brand">
+          <Sparkles size={22} />
+          <span>ResumeAI</span>
+        </div>
+
+        <div className="auth-header">
+          <h1 className="auth-title">Welcome back</h1>
+          <p className="auth-subtitle">
+            Sign in to continue to your career dashboard
           </p>
         </div>
-      </div>
 
-      <section className="card signup-card">
-        <form className="form-grid" onSubmit={handleSubmit}>
-          <div className="form-field">
+        <form className="auth-form" onSubmit={handleSubmit}>
+          <div className="auth-field">
             <label htmlFor="email">Email</label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="name@example.com"
-            />
+            <div className="input-wrapper">
+              <Mail size={15} className="input-icon" />
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="name@example.com"
+              />
+            </div>
           </div>
 
-          <div className="form-field">
+          <div className="auth-field">
             <label htmlFor="password">Password</label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
-            />
-          </div>
-
-          <div className="form-actions">
-            <button type="submit" className="primary-button" disabled={loading}>
-              {loading ? "Signing in..." : "Sign in"}
-            </button>
+            <div className="input-wrapper">
+              <Lock size={15} className="input-icon" />
+              <input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your password"
+              />
+            </div>
           </div>
 
           {status && (
@@ -90,8 +83,29 @@ const LoginPage = ({ onAuthSuccess }) => {
               {status.message}
             </div>
           )}
+
+          <button
+            type="submit"
+            className="primary-button auth-submit"
+            disabled={loading}
+          >
+            {loading ? "Signing in..." : "Sign in"}
+          </button>
         </form>
-      </section>
+
+        {onSwitch && (
+          <p className="auth-switch">
+            Don&apos;t have an account?{" "}
+            <button
+              type="button"
+              className="auth-link"
+              onClick={() => onSwitch("Sign Up")}
+            >
+              Create one
+            </button>
+          </p>
+        )}
+      </div>
     </div>
   );
 };

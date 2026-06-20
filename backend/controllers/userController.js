@@ -1,10 +1,7 @@
-import { randomUUID, createHash } from "crypto";
-import { readDB, writeDB } from "../db.js";
+import { randomUUID } from "crypto";
+import bcrypt from "bcrypt";
+import { findOne, insertOne } from "../db.js";
 import { generateAuthToken } from "../services/authService.js";
-
-function hashPassword(password) {
-  return createHash("sha256").update(password).digest("hex");
-}
 
 export const createUser = async (req, res) => {
   try {
@@ -17,10 +14,15 @@ export const createUser = async (req, res) => {
       });
     }
 
-    const users = await readDB("users.json");
-    const existing = users.find(
-      (user) => user.email.toLowerCase() === email.toLowerCase(),
-    );
+    if (password.length < 8) {
+      return res.status(400).json({
+        success: false,
+        error: "Password must be at least 8 characters",
+      });
+    }
+
+    const normalizedEmail = email.toLowerCase().trim();
+    const existing = await findOne("users", { email: normalizedEmail });
 
     if (existing) {
       return res.status(409).json({
@@ -29,34 +31,27 @@ export const createUser = async (req, res) => {
       });
     }
 
+    const passwordHash = await bcrypt.hash(password, 12);
     const newUser = {
       id: randomUUID(),
-      name,
-      email,
-      passwordHash: hashPassword(password),
+      name: name.trim(),
+      email: normalizedEmail,
+      passwordHash,
       createdAt: new Date().toISOString(),
     };
 
-    users.push(newUser);
-    await writeDB(users, "users.json");
+    await insertOne("users", newUser);
     const token = generateAuthToken(newUser.id);
 
     return res.status(201).json({
       success: true,
       data: {
-        user: {
-          id: newUser.id,
-          name: newUser.name,
-          email: newUser.email,
-          createdAt: newUser.createdAt,
-        },
+        user: { id: newUser.id, name: newUser.name, email: newUser.email, createdAt: newUser.createdAt },
         token,
       },
     });
   } catch (error) {
     console.error("USER CREATE ERROR:", error);
-    return res
-      .status(500)
-      .json({ success: false, error: "Internal server error" });
+    return res.status(500).json({ success: false, error: "Internal server error" });
   }
 };

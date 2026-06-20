@@ -29,3 +29,6 @@ export const loginUser = (credentials) => API.post("/auth/login", credentials);
 export const getCurrentUser = () => API.get("/auth/me");
 
 export const getResumeHistory = () => API.get("/resume/history");
+
+export const generateResume = (resumeText, jobDescription, matchData) =>
+  API.post("/resume/generate", { resumeText, jobDescription, matchData });

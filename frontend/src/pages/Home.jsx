@@ -20,6 +20,7 @@ import AIChatPage from "./AIChatPage";
 import SettingsPage from "./SettingsPage";
 import SignUpPage from "./SignUpPage";
 import LoginPage from "./LoginPage";
+import Toast from "../components/Toast";
 
 const publicPages = ["Login", "Sign Up"];
 const privatePages = [
@@ -60,6 +61,7 @@ const Home = () => {
   const [user, setUser] = useState(null);
   const [projects, setProjects] = useState([]);
   const [resumeHistory, setResumeHistory] = useState([]);
+  const [toasts, setToasts] = useState([]);
 
   const isAuthenticated = Boolean(user);
   const allowedPages = isAuthenticated ? privatePages : publicPages;
@@ -116,6 +118,14 @@ const Home = () => {
     setSelectedPage("Login");
   };
 
+  const showToast = (type, message) => {
+    const id = Date.now();
+    setToasts((prev) => [...prev, { id, type, message }]);
+    setTimeout(() => setToasts((prev) => prev.filter((t) => t.id !== id)), 4000);
+  };
+
+  const dismissToast = (id) => setToasts((prev) => prev.filter((t) => t.id !== id));
+
   const loadUserContent = async () => {
     try {
       const [projectsRes, historyRes] = await Promise.all([
@@ -142,7 +152,7 @@ const Home = () => {
 
   const handleAnalyze = async (file) => {
     if (!file) {
-      window.alert("Please choose a resume file before analyzing.");
+      showToast("error", "Please choose a resume file before analyzing.");
       return;
     }
 
@@ -158,9 +168,7 @@ const Home = () => {
         setResumeText(res.data.resumeText || "");
         setSelectedPage("Resume Analysis");
       } else {
-        window.alert(
-          "Resume upload failed: " + (res?.data?.error || "Unknown error"),
-        );
+        showToast("error", "Resume upload failed: " + (res?.data?.error || "Unknown error"));
       }
     } catch (error) {
       console.error("Upload failed", error);
@@ -172,8 +180,23 @@ const Home = () => {
     }
   };
 
+  const isAuthPage = publicPages.includes(selectedPage);
+
+  if (isAuthPage) {
+    return (
+      <div className="auth-shell">
+        <Toast toasts={toasts} onDismiss={dismissToast} />
+        <Page
+          onAuthSuccess={handleAuthSuccess}
+          onSwitch={(page) => setSelectedPage(page)}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="dashboard-shell">
+      <Toast toasts={toasts} onDismiss={dismissToast} />
       <Sidebar
         selectedPage={selectedPage}
         onChangePage={setSelectedPage}
