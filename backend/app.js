@@ -5,6 +5,7 @@ import resumeRoutes from "./routes/resumeRoutes.js";
 import projectRoutes from "./routes/projectRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
+import aiRoutes from "./routes/aiRoutes.js";
 
 
 const authLimiter = rateLimit({
@@ -29,6 +30,7 @@ app.use("/api/resume", resumeRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/users", authLimiter, userRoutes);
 app.use("/api/auth", authLimiter, authRoutes);
+app.use("/api/ai", aiRoutes);
 
 app.get("/", (req, res) => {
   console.log("ROOT ROUTE HIT");

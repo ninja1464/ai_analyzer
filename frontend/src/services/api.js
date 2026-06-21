@@ -32,3 +32,18 @@ export const getResumeHistory = () => API.get("/resume/history");
 
 export const generateResume = (resumeText, jobDescription, matchData) =>
   API.post("/resume/generate", { resumeText, jobDescription, matchData });
+
+export const analyzeSkillGap = (resumeText, targetRole) =>
+  API.post("/ai/skillgap", { resumeText, targetRole });
+
+export const rewriteBullet = (bulletPoint, resumeText) =>
+  API.post("/ai/rewrite", { bulletPoint, resumeText });
+
+export const generateInterviewQuestions = (resumeText, jobRole) =>
+  API.post("/ai/interview", { resumeText, jobRole });
+
+export const generateCareerRoadmap = (resumeText, targetRole) =>
+  API.post("/ai/roadmap", { resumeText, targetRole });
+
+export const chatWithAI = (message, resumeText) =>
+  API.post("/ai/chat", { message, resumeText });
