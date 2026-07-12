@@ -20,6 +20,8 @@ import AIChatPage from "./AIChatPage";
 import SettingsPage from "./SettingsPage";
 import SignUpPage from "./SignUpPage";
 import LoginPage from "./LoginPage";
+import AutoApplyPage from "./AutoApplyPage";
+import ApplicationHistoryPage from "./ApplicationHistoryPage";
 import Toast from "../components/Toast";
 
 const publicPages = ["Login", "Sign Up"];
@@ -27,6 +29,8 @@ const privatePages = [
   "Dashboard",
   "Resume Analysis",
   "Job Match",
+  "Auto Apply",
+  "My Applications",
   "Resume History",
   "Projects",
   "Skill Gap",
@@ -41,6 +45,8 @@ const pageMap = {
   Dashboard: DashboardPage,
   "Resume Analysis": ResumeAnalysisPage,
   "Job Match": JobMatchPage,
+  "Auto Apply": AutoApplyPage,
+  "My Applications": ApplicationHistoryPage,
   "Resume History": ResumeHistoryPage,
   Projects: ProjectsPage,
   "Sign Up": SignUpPage,

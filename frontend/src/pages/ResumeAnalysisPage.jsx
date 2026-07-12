@@ -1,7 +1,7 @@
 import React from "react";
 
 const ResumeAnalysisPage = ({ resumeData }) => {
-  const strengths = resumeData?.strengths || ["React", "TypeScript", "Testing"];
+  const strengths = resumeData?.strengths || [];
   const missingSkills = resumeData?.missingSkills || [
     "No missing keywords detected.",
   ];
@@ -69,9 +69,11 @@ const ResumeAnalysisPage = ({ resumeData }) => {
         <section className="card detail-card">
           <div className="card-title">Resume Strengths</div>
           <ul className="icon-list">
-            {strengths.map((item) => (
-              <li key={item}>✓ {item}</li>
-            ))}
+            {strengths.length > 0 ? (
+              strengths.map((item) => <li key={item}>{item}</li>)
+            ) : (
+              <li>Upload a resume to see your top strengths.</li>
+            )}
           </ul>
         </section>
 
@@ -79,16 +81,16 @@ const ResumeAnalysisPage = ({ resumeData }) => {
           <div className="card-title">Missing Keywords</div>
           <ul className="icon-list negative">
             {missingSkills.map((item) => (
-              <li key={item}>✗ {item}</li>
+              <li key={item}>{item}</li>
             ))}
           </ul>
         </section>
 
         <section className="card detail-card">
           <div className="card-title">Recommendations</div>
-          <ul className="icon-list">
+          <ul className="icon-list neutral">
             {improvements.map((item, index) => (
-              <li key={index}>• {item}</li>
+              <li key={index}>{item}</li>
             ))}
           </ul>
         </section>

@@ -24,6 +24,9 @@ Return ONLY JSON:
   "improvementSuggestions": [string]
 }
 
+Rules:
+- matchScore MUST be an integer from 0 to 100 (a percentage), never a 0-1 fraction
+
 Job Description:
 ${jobDescription}
 

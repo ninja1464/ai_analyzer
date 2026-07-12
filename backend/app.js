@@ -6,6 +6,8 @@ import projectRoutes from "./routes/projectRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import aiRoutes from "./routes/aiRoutes.js";
+import applicantProfileRoutes from "./routes/applicantProfileRoutes.js";
+import autoApplyRoutes from "./routes/autoApplyRoutes.js";
 
 
 const authLimiter = rateLimit({
@@ -31,6 +33,8 @@ app.use("/api/projects", projectRoutes);
 app.use("/api/users", authLimiter, userRoutes);
 app.use("/api/auth", authLimiter, authRoutes);
 app.use("/api/ai", aiRoutes);
+app.use("/api/profile", applicantProfileRoutes);
+app.use("/api/apply", autoApplyRoutes);
 
 app.get("/", (req, res) => {
   console.log("ROOT ROUTE HIT");

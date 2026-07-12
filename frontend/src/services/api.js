@@ -47,3 +47,32 @@ export const generateCareerRoadmap = (resumeText, targetRole) =>
 
 export const chatWithAI = (message, resumeText) =>
   API.post("/ai/chat", { message, resumeText });
+
+export const getApplicantProfile = () => API.get("/profile");
+
+export const updateApplicantProfile = (profileData) =>
+  API.put("/profile", profileData);
+
+export const prepareApplication = (jobUrl, resumeText) =>
+  API.post("/apply/prepare", { jobUrl, resumeText });
+
+export const submitApplication = (applicationId) =>
+  API.post(`/apply/${applicationId}/submit`);
+
+export const confirmManualSubmission = (applicationId) =>
+  API.post(`/apply/${applicationId}/confirm-manual`);
+
+export const searchJobs = (keywords, location) =>
+  API.get("/apply/search-jobs", { params: { keywords, location } });
+
+export const listApplications = () => API.get("/apply");
+
+export const getApplication = (applicationId) => API.get(`/apply/${applicationId}`);
+
+// Screenshot endpoints require auth headers, so <img src> can't hit them
+// directly — fetch as a blob and turn it into an object URL instead.
+export const getApplicationScreenshotBlob = (applicationId) =>
+  API.get(`/apply/${applicationId}/screenshot`, { responseType: "blob" });
+
+export const getApplicationConfirmationScreenshotBlob = (applicationId) =>
+  API.get(`/apply/${applicationId}/confirmation-screenshot`, { responseType: "blob" });

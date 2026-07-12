@@ -14,12 +14,16 @@ import {
   LogIn,
   UserPlus,
   Sparkles,
+  Send,
+  ListChecks,
 } from "lucide-react";
 
 const iconMap = {
   Dashboard: LayoutDashboard,
   "Resume Analysis": FileSearch,
   "Job Match": Briefcase,
+  "Auto Apply": Send,
+  "My Applications": ListChecks,
   "Resume History": History,
   Projects: FolderOpen,
   "Skill Gap": TrendingUp,

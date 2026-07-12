@@ -1,4 +1,4 @@
-import { matchResumeToJob } from "../services/jobMatchService.js";
+import { computeAtsScore } from "../services/atsScoreService.js";
 
 export const matchResume = async (req, res) => {
   try {
@@ -11,15 +11,21 @@ export const matchResume = async (req, res) => {
       });
     }
 
-    const result = await matchResumeToJob(resumeText, jobDescription);
-
-    if (!result.success) {
-      return res.status(500).json(result);
-    }
+    const score = await computeAtsScore(resumeText, jobDescription);
 
     return res.status(200).json({
       success: true,
-      data: result.data,
+      data: {
+        matchScore: score.overall,
+        keywordScore: score.keywordScore,
+        structureScore: score.structureScore,
+        llmScore: score.llmScore,
+        missingKeywords: score.missingKeywords,
+        matchedKeywords: score.matchedKeywords,
+        formatWarnings: score.formatWarnings,
+        fitAnalysis: score.fitAnalysis,
+        improvementSuggestions: score.improvementSuggestions,
+      },
     });
   } catch (error) {
     console.error("MATCH CONTROLLER ERROR:", error);

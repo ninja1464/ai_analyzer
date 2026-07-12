@@ -159,7 +159,7 @@ const JobMatchPage = ({ resumeText }) => {
                 <ul className="icon-list negative">
                   {missingCount > 0 ? (
                     results.missingKeywords.map((skill) => (
-                      <li key={skill}>✗ {skill}</li>
+                      <li key={skill}>{skill}</li>
                     ))
                   ) : (
                     <li>None detected. Your resume looks relevant.</li>
@@ -168,10 +168,10 @@ const JobMatchPage = ({ resumeText }) => {
               </div>
               <div>
                 <div className="subcard-title">Suggestions</div>
-                <ul className="icon-list">
+                <ul className="icon-list neutral">
                   {results.improvementSuggestions?.length > 0 ? (
                     results.improvementSuggestions.map((item, index) => (
-                      <li key={index}>• {item}</li>
+                      <li key={index}>{item}</li>
                     ))
                   ) : (
                     <li>No suggestions available.</li>
